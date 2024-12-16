@@ -17,6 +17,9 @@ jobs:
       - name: Install Serverless
         run: npm i -g serverless@3.39.0
 
+      - name: Install Serverless ESbuild
+        run: serverless plugin install -n serverless-esbuild
+
       - name: Serverless Package
         run: serverless package
 
