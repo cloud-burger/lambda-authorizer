@@ -1,0 +1,35 @@
+service: self-service-auth
+
+frameworkVersion: "3"
+package: 
+  individually: true
+
+provider:
+  name: aws
+  stage: dev
+  environment:
+    TEST: test
+
+custom:
+  esbuild:
+    watch:
+      pattern: "src/**/*.ts"
+      ignore: "**/*.test.ts"
+
+plugins:
+  - serverless-esbuild
+  - serverless-offline
+
+functions:
+  authorizer:
+    handler: src/cmd/functions/authorizer/index.handler
+    events:
+      - http:
+          method: GET
+          path: /authorizer
+  authenticate:
+    handler: src/cmd/functions/authenticate/index.handler
+    events:
+      - http:
+          method: GET
+          path: /authenticate
