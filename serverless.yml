@@ -1,7 +1,7 @@
 service: self-service-auth
 
 frameworkVersion: "3"
-package: 
+package:
   individually: true
 
 provider:

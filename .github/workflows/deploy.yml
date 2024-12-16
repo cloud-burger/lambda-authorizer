@@ -21,7 +21,7 @@ jobs:
         run: serverless plugin install -n serverless-esbuild
 
       - name: Serverless Package
-        run: serverless package
+        run: serverless package --package artifacts
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -31,9 +31,9 @@ jobs:
           aws-region: us-east-2
 
       - name: ls
-        run: ls && ls ./serverless
+        run: ls
 
       - name: Upload to S3
         id: upload
         run: |
-          aws s3 cp ./serverless/authorizer.zip s3://cloud-burger-deploys/authorizer.zip
+          aws s3 cp ./serverless/artifacts/authorizer.zip s3://cloud-burger-deploys/authorizer.zip
