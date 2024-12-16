@@ -14,6 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Serverless package
+        uses: serverless/github-action@master
+        with:
+          args: package
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -21,14 +26,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: Build
-        id: build
-        run: |
-          npm prune --production
-          mkdir build
-          zip -r build/latest.zip src
-
       - name: Upload to S3
         id: upload
         run: |
-          aws s3 cp build/latest.zip s3://cloud-burger-deploys/latest.zip
+          aws s3 cp ./serverless/build/self-service-auth-authorizer.zip s3://cloud-burger-deploys/self-service-auth-authorizer.zip

@@ -1,9 +1,28 @@
-import { Controller, Request, Response } from '@cloud-burger/handlers';
+import {
+  AuthorizeController,
+  AuthorizeRequest,
+  AuthorizeResponse,
+} from '@cloud-burger/handlers';
+import { FindCustomerByDocumentNumberUseCase } from 'application/use-cases/customer/find-by-document-number';
 
-export class AuthorizerController {
-  constructor() {}
+export class AuthorizeCustomerController {
+  constructor(
+    private findCustomerByDocumentNumberUseCase: FindCustomerByDocumentNumberUseCase,
+  ) {}
 
-  handler: Controller = async (request: Request): Promise<Response<void>> => {
-    return { statusCode: 200 };
+  handler: AuthorizeController = async (
+    event: AuthorizeRequest,
+  ): Promise<AuthorizeResponse> => {
+    const documentNumber = event.headers['x-identification'];
+
+    if (documentNumber) {
+      await this.findCustomerByDocumentNumberUseCase.execute({
+        documentNumber,
+      });
+
+      return {
+        principalId: documentNumber,
+      };
+    }
   };
 }
