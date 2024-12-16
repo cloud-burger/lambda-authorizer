@@ -11,3 +11,5 @@ coverage/
 .terraform*
 
 /src/api/redis/data
+
+.serverless*

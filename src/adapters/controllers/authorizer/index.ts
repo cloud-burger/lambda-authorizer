@@ -1,31 +1,28 @@
+import {
+  AuthorizeController,
+  AuthorizeRequest,
+  AuthorizeResponse,
+} from '@cloud-burger/handlers';
 import { FindCustomerByDocumentNumberUseCase } from 'application/use-cases/customer/find-by-document-number';
-import { APIGatewayAuthorizerResult, APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
-import { generatePolicy } from 'cmd/functions/authorizer/policy';
 
-export class AuthorizerController {
+export class AuthorizeCustomerController {
   constructor(
     private findCustomerByDocumentNumberUseCase: FindCustomerByDocumentNumberUseCase,
   ) {}
 
-  handler = async (event: APIGatewayRequestAuthorizerEvent): Promise<APIGatewayAuthorizerResult> => {
-    const methodArn = event.methodArn;
-    const headers = event.headers || {};
+  handler: AuthorizeController = async (
+    event: AuthorizeRequest,
+  ): Promise<AuthorizeResponse> => {
+    const documentNumber = event.headers['x-identification'];
 
-    if (headers['x-identification']) {
-      const documentNumber = headers['x-identification'];
-      
-      try {
-        const customer = await this.findCustomerByDocumentNumberUseCase.execute({
-          documentNumber,
-        });
+    if (documentNumber) {
+      await this.findCustomerByDocumentNumberUseCase.execute({
+        documentNumber,
+      });
 
-        return generatePolicy(documentNumber, 'Allow', methodArn);        
-      } catch (error) {
-        return generatePolicy(documentNumber, 'Deny', methodArn);
-      }
-
+      return {
+        principalId: documentNumber,
+      };
     }
-
-    return generatePolicy('not-identified', 'Allow', methodArn);
   };
 }

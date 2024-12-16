@@ -1,24 +1,19 @@
 service: self-service-auth
 
-frameworkVersion: "3"
+provider:
+  name: aws
+  runtime: nodejs20.x
+
 package: 
   individually: true
 
-provider:
-  name: aws
-  stage: dev
-  environment:
-    TEST: test
-
-custom:
+build:
   esbuild:
-    watch:
-      pattern: "src/**/*.ts"
-      ignore: "**/*.test.ts"
+    bundle: true
+    minify: true
+    external:
+      - 'knex'
 
-plugins:
-  - serverless-esbuild
-  - serverless-offline
 
 functions:
   authorizer:
@@ -27,9 +22,3 @@ functions:
       - http:
           method: GET
           path: /authorizer
-  authenticate:
-    handler: src/cmd/functions/authenticate/index.handler
-    events:
-      - http:
-          method: GET
-          path: /authenticate
