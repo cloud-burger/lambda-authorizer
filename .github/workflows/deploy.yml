@@ -30,10 +30,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      - name: ls
-        run: ls artifacts
-
       - name: Upload to S3
         id: upload
         run: |
-          aws s3 cp ./serverless/artifacts/authorizer.zip s3://cloud-burger-deploys/authorizer.zip
+          aws s3 cp ./artifacts/authorizer.zip s3://cloud-burger-deploys/authorizer.zip
