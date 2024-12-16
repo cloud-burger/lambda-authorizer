@@ -15,8 +15,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Serverless package
-        uses: serverless/github-action@master
+        uses: ryanlawson/serverless-github-action@v1.0
         with:
+          serverless-version: 4
           args: package
 
       - name: Configure AWS credentials
@@ -25,6 +26,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
+
+      - name: ls
+        run: ls && ls ./serverless
 
       - name: Upload to S3
         id: upload
