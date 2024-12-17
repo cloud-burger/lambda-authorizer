@@ -19,7 +19,7 @@ export class PgPool implements Pool {
       database: env.DATABASE_NAME,
       password: env.DATABASE_PASSWORD,
       port: +env.DATABASE_PORT,
-      host: env.DATABASE_HOST,
+      host: env.DATABASE_HOST.split(':')[0],
       connectionTimeoutMillis: +env.DATABASE_CONNECTION_TIMEOUT,
     };
 
