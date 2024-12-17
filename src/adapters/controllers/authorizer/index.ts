@@ -35,10 +35,10 @@ export class AuthorizeCustomerController {
           documentNumber,
         },
       });
-
-      return {
-        principalId: documentNumber,
-      };
     }
+
+    return {
+      principalId: documentNumber,
+    };
   };
 }

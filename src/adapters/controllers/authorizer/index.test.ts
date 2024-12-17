@@ -49,6 +49,6 @@ describe('authorize customer controller', () => {
     });
 
     expect(findCustomerByDocumentNumberUseCase.execute).not.toHaveBeenCalled();
-    expect(response).toBeUndefined();
+    expect(response).toEqual({ principalId: 'not-identified' });
   });
 });
