@@ -38,4 +38,17 @@ describe('authorize customer controller', () => {
       principalId: '1234567890',
     });
   });
+
+  it('should return when user is not identified', async () => {
+    const response = await authorizeCustomerController.handler({
+      headers: {
+        'x-identification': 'not-identified',
+      },
+      methodArn: 'method-arn',
+      type: 'REQUEST',
+    });
+
+    expect(findCustomerByDocumentNumberUseCase.execute).not.toHaveBeenCalled();
+    expect(response).toBeUndefined();
+  });
 });
