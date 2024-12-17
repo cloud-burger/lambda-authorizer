@@ -3,6 +3,7 @@ import {
   AuthorizeRequest,
   AuthorizeResponse,
 } from '@cloud-burger/handlers';
+import logger from '@cloud-burger/logger';
 import { FindCustomerByDocumentNumberUseCase } from 'application/use-cases/customer/find-by-document-number';
 
 export class AuthorizeCustomerController {
@@ -11,18 +12,29 @@ export class AuthorizeCustomerController {
   ) {}
 
   handler: AuthorizeController = async (
-    event: AuthorizeRequest,
+    request: AuthorizeRequest,
   ): Promise<AuthorizeResponse> => {
-    const documentNumber = event.headers['x-identification'];
+    logger.info({
+      message: 'Authorize user request',
+      data: request,
+    });
 
-    if (documentNumber) {
-      await this.findCustomerByDocumentNumberUseCase.execute({
+    const documentNumber = request.headers['x-identification'];
+
+    const customer = await this.findCustomerByDocumentNumberUseCase.execute({
+      documentNumber,
+    });
+
+    logger.info({
+      message: 'Authorize user response',
+      data: {
+        customer,
         documentNumber,
-      });
+      },
+    });
 
-      return {
-        principalId: documentNumber,
-      };
-    }
+    return {
+      principalId: documentNumber,
+    };
   };
 }

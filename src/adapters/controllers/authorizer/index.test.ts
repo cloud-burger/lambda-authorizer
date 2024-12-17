@@ -38,17 +38,4 @@ describe('authorize customer controller', () => {
       principalId: '1234567890',
     });
   });
-
-  it('should return when x-identification is not set', async () => {
-    const response = await authorizeCustomerController.handler({
-      headers: {
-        'x-identification': null,
-      },
-      methodArn: 'method-arn',
-      type: 'REQUEST',
-    });
-
-    expect(findCustomerByDocumentNumberUseCase.execute).not.toHaveBeenCalled();
-    expect(response).toBeUndefined();
-  });
 });
