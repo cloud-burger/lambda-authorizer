@@ -21,20 +21,24 @@ export class AuthorizeCustomerController {
 
     const documentNumber = request.headers['x-identification'];
 
-    const customer = await this.findCustomerByDocumentNumberUseCase.execute({
-      documentNumber,
-    });
+    const isUserIdentified = documentNumber !== 'not-identified';
 
-    logger.info({
-      message: 'Authorize user response',
-      data: {
-        customer,
+    if (isUserIdentified) {
+      const customer = await this.findCustomerByDocumentNumberUseCase.execute({
         documentNumber,
-      },
-    });
+      });
 
-    return {
-      principalId: documentNumber,
-    };
+      logger.info({
+        message: 'Authorize user response',
+        data: {
+          customer,
+          documentNumber,
+        },
+      });
+
+      return {
+        principalId: documentNumber,
+      };
+    }
   };
 }
