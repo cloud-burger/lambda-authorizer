@@ -1,3 +1,4 @@
+import logger from '@cloud-burger/logger';
 import { PoolConfig, Pool as PostgresPool } from 'pg';
 import { env } from '~/infrastructure/env';
 import Connection from '../connection';
@@ -22,6 +23,11 @@ export class PgPool implements Pool {
       host: env.DATABASE_HOST.split(':')[0],
       connectionTimeoutMillis: +env.DATABASE_CONNECTION_TIMEOUT,
     };
+
+    logger.debug({
+      message: 'Pool config',
+      data: poolConfig,
+    });
 
     const pool = new PostgresPool(poolConfig);
 

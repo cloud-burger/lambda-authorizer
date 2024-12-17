@@ -1,4 +1,5 @@
 import { AuthorizerHandler } from '@cloud-burger/handlers';
+import logger from '@cloud-burger/logger';
 import { FindCustomerByDocumentNumberUseCase } from 'application/use-cases/customer/find-by-document-number';
 import { APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
 import { AuthorizeCustomerController } from '~/controllers/authorizer';
@@ -28,6 +29,11 @@ const setDependencies = (connection: Connection) => {
 };
 
 export const handler = async (event: APIGatewayRequestAuthorizerEvent) => {
+  logger.debug({
+    message: 'Event received',
+    data: event,
+  });
+
   pool = await PoolFactory.getPool();
   const connection = await pool.getConnection();
 
