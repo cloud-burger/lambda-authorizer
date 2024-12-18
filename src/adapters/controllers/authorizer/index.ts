@@ -24,18 +24,17 @@ export class AuthorizeCustomerController {
     const isUserIdentified = documentNumber !== 'not-identified';
 
     if (isUserIdentified) {
-      const customer = await this.findCustomerByDocumentNumberUseCase.execute({
+      await this.findCustomerByDocumentNumberUseCase.execute({
         documentNumber,
       });
-
-      logger.info({
-        message: 'Authorize user response',
-        data: {
-          customer,
-          documentNumber,
-        },
-      });
     }
+
+    logger.info({
+      message: 'Authorize user response',
+      data: {
+        documentNumber,
+      },
+    });
 
     return {
       principalId: documentNumber,
