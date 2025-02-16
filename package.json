@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@cloud-burger/handlers": "^1.0.3",
+    "@cloud-burger/handlers": "^1.0.5",
     "@cloud-burger/logger": "^1.0.0",
     "joi": "^17.13.3",
     "knex": "^3.1.0",
