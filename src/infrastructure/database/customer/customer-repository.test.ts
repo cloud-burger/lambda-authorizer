@@ -1,34 +1,42 @@
-import { mock, MockProxy } from 'jest-mock-extended';
-import Connection from '~/infrastructure/postgres/connection';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { mockClient } from 'aws-sdk-client-mock';
+import 'aws-sdk-client-mock-jest';
 import { CustomerRepository } from './customer-repository';
 
 describe('customer repository', () => {
-  let connection: MockProxy<Connection>;
+  const mockDynamoDbClient = mockClient(DynamoDBClient);
   let customerRepository: CustomerRepository;
 
   beforeAll(() => {
-    connection = mock();
-    customerRepository = new CustomerRepository(connection);
+    customerRepository = new CustomerRepository('customers');
   });
 
   it('should return null while find customer by document number and customer not found', async () => {
-    connection.query.mockResolvedValue({
-      records: [],
+    mockDynamoDbClient.on(QueryCommand).resolves({
+      Items: [],
     });
 
     const customer =
-      await customerRepository.findByDocumentNumber('53523992060');
+      await customerRepository.findByDocumentNumber('01234567890');
 
     expect(customer).toBeNull();
-    expect(connection.query).toHaveBeenNthCalledWith(1, {
-      parameters: { document_number: '53523992060' },
-      sql: 'SELECT * FROM public.customers WHERE document_number = :document_number',
+    expect(mockDynamoDbClient).toHaveReceivedCommandWith(QueryCommand, {
+      TableName: 'customers',
+      IndexName: 'document_number_gsi',
+      KeyConditionExpression: '#document_number = :documentNumber',
+      ExpressionAttributeNames: {
+        '#document_number': 'document_number',
+      },
+      ExpressionAttributeValues: {
+        ':documentNumber': '01234567890',
+      },
     });
   });
 
   it('should return customer while find customer by document number', async () => {
-    connection.query.mockResolvedValue({
-      records: [
+    mockDynamoDbClient.on(QueryCommand).resolves({
+      Items: [
         {
           created_at: '2023-01-01',
           updated_at: '2023-01-01',
@@ -41,7 +49,7 @@ describe('customer repository', () => {
     });
 
     const customer =
-      await customerRepository.findByDocumentNumber('53523992060');
+      await customerRepository.findByDocumentNumber('01234567890');
 
     expect(customer).toEqual({
       createdAt: new Date('2023-01-01T00:00:00.000Z'),
@@ -51,9 +59,16 @@ describe('customer repository', () => {
       name: 'John',
       updatedAt: new Date('2023-01-01T00:00:00.000Z'),
     });
-    expect(connection.query).toHaveBeenNthCalledWith(1, {
-      parameters: { document_number: '53523992060' },
-      sql: 'SELECT * FROM public.customers WHERE document_number = :document_number',
+    expect(mockDynamoDbClient).toHaveReceivedCommandWith(QueryCommand, {
+      TableName: 'customers',
+      IndexName: 'document_number_gsi',
+      KeyConditionExpression: '#document_number = :documentNumber',
+      ExpressionAttributeNames: {
+        '#document_number': 'document_number',
+      },
+      ExpressionAttributeValues: {
+        ':documentNumber': '01234567890',
+      },
     });
   });
 });

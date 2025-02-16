@@ -4,18 +4,15 @@ import { FindCustomerByDocumentNumberUseCase } from 'application/use-cases/custo
 import { APIGatewayRequestAuthorizerEvent } from 'aws-lambda';
 import { AuthorizeCustomerController } from '~/controllers/authorizer';
 import { CustomerRepository } from '~/infrastructure/database/customer/customer-repository';
-import Connection from '~/infrastructure/postgres/connection';
-import Pool from '~/infrastructure/postgres/pool';
-import { PoolFactory } from '~/infrastructure/postgres/pool-factory';
+import { env } from '~/infrastructure/env';
 
-let pool: Pool;
 let customerRepository: CustomerRepository;
 let findCustomerByDocumentNumberUseCase: FindCustomerByDocumentNumberUseCase;
 let authorizeCustomerController: AuthorizeCustomerController;
 let authorizeHandler: AuthorizerHandler;
 
-const setDependencies = (connection: Connection) => {
-  customerRepository = new CustomerRepository(connection);
+const setDependencies = () => {
+  customerRepository = new CustomerRepository(env.DYNAMO_TABLE_CUSTOMERS);
   findCustomerByDocumentNumberUseCase = new FindCustomerByDocumentNumberUseCase(
     customerRepository,
   );
@@ -34,14 +31,7 @@ export const handler = async (event: APIGatewayRequestAuthorizerEvent) => {
     data: event,
   });
 
-  pool = await PoolFactory.getPool();
-  const connection = await pool.getConnection();
+  setDependencies();
 
-  setDependencies(connection);
-
-  try {
-    return await authorizeHandler.handler(event);
-  } finally {
-    connection.release();
-  }
+  return await authorizeHandler.handler(event);
 };
