@@ -9,7 +9,7 @@ export class CustomerRepository implements ICustomerRepository {
   private readonly client: DynamoDBClient;
 
   constructor(private customersTable: string) {
-    this.client = new DynamoDBClient({ region: 'sa-east-1' });
+    this.client = new DynamoDBClient({ region: 'us-east-1' });
   }
 
   async findByDocumentNumber(documentNumber: string): Promise<Customer | null> {
